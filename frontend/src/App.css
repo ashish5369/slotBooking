@@ -1,0 +1,15 @@
+.App {
+  text-align: center;
+}
+
+.calendar-container {
+  margin-top: 20px;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.5em;
+}
+
+.fc-day-today {
+  background-color: #f8f9fa !important;
+}
