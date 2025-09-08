@@ -63,6 +63,29 @@ The frontend application will run on http://localhost:3000
 - `GET /api/slots/:slotId` - Get a specific slot by ID
 - `POST /api/slots/book` - Book a slot (requires slotId, name, email in request body)
 
+## 🧪 API Testing
+
+Comprehensive Postman testing collection is available in the `/postman` directory:
+
+- **Postman Collection**: Ready-to-import test collection with 12+ automated tests
+- **Command Line Tests**: Automated bash script for CI/CD integration
+- **cURL Examples**: Manual testing commands for all endpoints
+
+### Quick Test Setup
+```bash
+# Option 1: Import into Postman
+# Import files from /postman directory into Postman
+
+# Option 2: Run automated command-line tests
+cd postman
+./test_api.sh
+
+# Option 3: Use Newman CLI
+newman run SlotBooking_API_Tests.postman_collection.json -e SlotBooking_Environment.postman_environment.json
+```
+
+See [Testing Guide](./postman/TESTING_GUIDE.md) for detailed instructions.
+
 ## Data Structure
 
 Slots are stored in a JSON file with the following structure:

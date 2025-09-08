@@ -67,9 +67,9 @@
     "date": "2025-09-11",
     "startTime": "15:00",
     "endTime": "16:00",
-    "status": "Available",
-    "bookedName": null,
-    "bookedEmail": null
+    "status": "Booked",
+    "bookedName": "Test User",
+    "bookedEmail": "test@example.com"
   },
   {
     "slotId": "slot-009",
@@ -85,8 +85,8 @@
     "date": "2025-09-12",
     "startTime": "13:00",
     "endTime": "14:00",
-    "status": "Available",
-    "bookedName": null,
-    "bookedEmail": null
+    "status": "Booked",
+    "bookedName": "Test User",
+    "bookedEmail": "test@example.com"
   }
 ]

@@ -1,0 +1,564 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Slot Booking API Tests",
+		"description": "Comprehensive test collection for the Interview Slot Booking API. Tests all endpoints including success and error scenarios.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Server Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "Test if the server is running and responding"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains expected message\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Interview Slot Booking API is running\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			],
+			"description": "Basic health check tests for the API server"
+		},
+		{
+			"name": "Get All Slots",
+			"item": [
+				{
+					"name": "Get All Available Slots - Success",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/slots",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"slots"
+							]
+						},
+						"description": "Retrieve all available interview slots"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is an array\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Array contains slot objects with required fields\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.length > 0) {",
+									"        const slot = jsonData[0];",
+									"        pm.expect(slot).to.have.property('slotId');",
+									"        pm.expect(slot).to.have.property('date');",
+									"        pm.expect(slot).to.have.property('startTime');",
+									"        pm.expect(slot).to.have.property('endTime');",
+									"        pm.expect(slot).to.have.property('status');",
+									"        pm.expect(slot).to.have.property('bookedName');",
+									"        pm.expect(slot).to.have.property('bookedEmail');",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"Store first available slot ID for other tests\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    const availableSlot = jsonData.find(slot => slot.status === 'Available');",
+									"    if (availableSlot) {",
+									"        pm.collectionVariables.set('available_slot_id', availableSlot.slotId);",
+									"    }",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 1000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			],
+			"description": "Tests for retrieving all slots"
+		},
+		{
+			"name": "Get Specific Slot",
+			"item": [
+				{
+					"name": "Get Slot by ID - Success",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/slots/slot-001",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"slots",
+								"slot-001"
+							]
+						},
+						"description": "Retrieve a specific slot by its ID"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response is a slot object\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('object');",
+									"    pm.expect(jsonData).to.have.property('slotId', 'slot-001');",
+									"});",
+									"",
+									"pm.test(\"Slot object has all required fields\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('slotId');",
+									"    pm.expect(jsonData).to.have.property('date');",
+									"    pm.expect(jsonData).to.have.property('startTime');",
+									"    pm.expect(jsonData).to.have.property('endTime');",
+									"    pm.expect(jsonData).to.have.property('status');",
+									"    pm.expect(jsonData).to.have.property('bookedName');",
+									"    pm.expect(jsonData).to.have.property('bookedEmail');",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 500ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Get Slot by ID - Not Found",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/slots/non-existent-slot",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"slots",
+								"non-existent-slot"
+							]
+						},
+						"description": "Test error handling for non-existent slot ID"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response contains error message\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message', 'Slot not found');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			],
+			"description": "Tests for retrieving specific slots by ID"
+		},
+		{
+			"name": "Book Slot",
+			"item": [
+				{
+					"name": "Book Slot - Success",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"slotId\": \"slot-002\",\n    \"name\": \"John Doe\",\n    \"email\": \"john.doe@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/slots/book",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"slots",
+								"book"
+							]
+						},
+						"description": "Successfully book an available slot"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response contains success message\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message', 'Slot booked successfully');",
+									"});",
+									"",
+									"pm.test(\"Response contains booked slot details\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('slot');",
+									"    pm.expect(jsonData.slot).to.have.property('status', 'Booked');",
+									"    pm.expect(jsonData.slot).to.have.property('bookedName', 'John Doe');",
+									"    pm.expect(jsonData.slot).to.have.property('bookedEmail', 'john.doe@example.com');",
+									"});",
+									"",
+									"pm.test(\"Response time is less than 1000ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Book Slot - Missing Required Fields",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"slotId\": \"slot-001\",\n    \"name\": \"Jane Doe\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/slots/book",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"slots",
+								"book"
+							]
+						},
+						"description": "Test validation when required fields are missing (email missing)"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains validation error\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('required');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Book Slot - Empty Body",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/slots/book",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"slots",
+								"book"
+							]
+						},
+						"description": "Test validation with completely empty request body"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains validation error\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('required');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Book Slot - Non-existent Slot ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"slotId\": \"invalid-slot-id\",\n    \"name\": \"Test User\",\n    \"email\": \"test@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/slots/book",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"slots",
+								"book"
+							]
+						},
+						"description": "Test booking with non-existent slot ID"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"pm.test(\"Response contains not found error\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message', 'Slot not found');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				},
+				{
+					"name": "Book Slot - Already Booked",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"slotId\": \"slot-002\",\n    \"name\": \"Another User\",\n    \"email\": \"another@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/slots/book",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"slots",
+								"book"
+							]
+						},
+						"description": "Test booking a slot that's already booked (should run after successful booking test)"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Response contains already booked error\", function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message', 'This slot is already booked');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			],
+			"description": "Tests for booking slots including success and error scenarios"
+		},
+		{
+			"name": "Integration Tests",
+			"item": [
+				{
+					"name": "Full Booking Flow Test",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"slotId\": \"slot-003\",\n    \"name\": \"Integration Test User\",\n    \"email\": \"integration@test.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/slots/book",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"slots",
+								"book"
+							]
+						},
+						"description": "Book a slot and then verify it's updated in the system"
+					},
+					"response": [],
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Booking successful\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.message).to.eql('Slot booked successfully');",
+									"});",
+									"",
+									"// Now verify the slot is updated by fetching it",
+									"pm.test(\"Verify slot is booked in system\", function () {",
+									"    pm.sendRequest({",
+									"        url: pm.environment.get('base_url') + '/api/slots/slot-003',",
+									"        method: 'GET'",
+									"    }, function (err, response) {",
+									"        pm.expect(response.code).to.eql(200);",
+									"        const slot = response.json();",
+									"        pm.expect(slot.status).to.eql('Booked');",
+									"        pm.expect(slot.bookedName).to.eql('Integration Test User');",
+									"        pm.expect(slot.bookedEmail).to.eql('integration@test.com');",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					]
+				}
+			],
+			"description": "End-to-end integration tests"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "available_slot_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
