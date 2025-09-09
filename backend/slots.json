@@ -4,18 +4,18 @@
     "date": "2025-09-08",
     "startTime": "09:00",
     "endTime": "10:00",
-    "status": "Available",
-    "bookedName": null,
-    "bookedEmail": null
+    "status": "Booked",
+    "bookedName": "Ashish Singh",
+    "bookedEmail": "ashish.singh282002@gmail.com"
   },
   {
     "slotId": "slot-002",
     "date": "2025-09-08",
     "startTime": "11:00",
     "endTime": "12:00",
-    "status": "Available",
-    "bookedName": null,
-    "bookedEmail": null
+    "status": "Booked",
+    "bookedName": "Test User",
+    "bookedEmail": "test@example.com"
   },
   {
     "slotId": "slot-003",

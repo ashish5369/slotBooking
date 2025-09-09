@@ -1,14 +1,45 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
 const slotController = require('../controllers/slotController');
 
-// Get all available slots
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+    },
+    filename: function (req, file, cb) {
+        cb(null, 'import-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        const allowedTypes = ['.xlsx', '.xls', '.csv'];
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (allowedTypes.includes(ext)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only Excel and CSV files are allowed'));
+        }
+    }
+});
+
+// Slot management routes
 router.get('/', slotController.getAllSlots);
-
-// Get a specific slot by ID
 router.get('/:slotId', slotController.getSlotById);
-
-// Book a slot
 router.post('/book', slotController.bookSlot);
+router.post('/add', slotController.addSlot);
+router.put('/:slotId', slotController.updateSlot);
+
+// Candidate management routes (Admin)
+router.get('/admin/candidates', slotController.getAllCandidates);
+router.post('/admin/candidates', slotController.addCandidate);
+
+// Import/Export functionality
+router.get('/admin/export', slotController.exportToExcel);
+router.post('/admin/import', upload.single('excelFile'), slotController.importSlots);
 
 module.exports = router;

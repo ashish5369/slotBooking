@@ -1,0 +1,4 @@
+SlotID,Date,StartTime,EndTime,Status,BookedName,BookedEmail
+,2025-09-20,09:00,10:00,Available,,
+,2025-09-20,11:00,12:00,Booked,Test Import User,testimport@example.com
+slot-002,2025-09-09,11:00,12:00,Available,,

@@ -1,0 +1,28 @@
+nohup: ignoring input
+
+> slot-booking-backend@1.0.0 start
+> node server.js
+
+[dotenv@17.2.2] injecting env (9) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.2.2] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+✅ Database service initialized
+📊 Using SQLite database for slot management
+Server running on port 5000
+[0mGET /admin?id=19e68bb3-4bf6-47a5-8aa2-afe34113bce3&vscodeBrowserReqId=1757399404496 [32m200[0m 5.238 ms - 30549[0m
+[0mGET /api/slots/admin/candidates [36m304[0m 3.363 ms - -[0m
+[0mGET /api/slots [36m304[0m 1.016 ms - -[0m
+[0mPOST /api/slots/book [32m200[0m 7.268 ms - 284[0m
+[0mGET /api/slots [32m200[0m 1.035 ms - 1979[0m
+[0mGET /api/slots/admin/candidates [32m200[0m 0.719 ms - 572[0m
+[0mGET /admin?id=19e68bb3-4bf6-47a5-8aa2-afe34113bce3&vscodeBrowserReqId=1757399446036 [32m200[0m 1.297 ms - 30549[0m
+[0mGET /api/slots/admin/candidates [36m304[0m 0.844 ms - -[0m
+[0mGET /api/slots [36m304[0m 0.646 ms - -[0m
+[0mGET /admin?id=19e68bb3-4bf6-47a5-8aa2-afe34113bce3&vscodeBrowserReqId=1757400653430 [32m200[0m 0.770 ms - 49258[0m
+[0mGET /api/slots/admin/candidates [36m304[0m 0.905 ms - -[0m
+[0mGET /api/slots [36m304[0m 0.959 ms - -[0m
+[0mGET /api/slots/admin/candidates [36m304[0m 0.691 ms - -[0m
+[0mGET /api/slots [36m304[0m 1.161 ms - -[0m
+[0mGET /admin [32m200[0m 0.604 ms - 53448[0m
+[0mGET /admin [32m200[0m 1.889 ms - 53448[0m
+[0mGET /admin?id=19e68bb3-4bf6-47a5-8aa2-afe34113bce3&vscodeBrowserReqId=1757402188155 [32m200[0m 0.615 ms - 54291[0m
+[0mGET /admin [32m200[0m 0.758 ms - 54291[0m

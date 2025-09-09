@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Ashish Singh",
+    "email": "ashish.singh282002@gmail.com",
+    "status": "Screening Selected"
+  },
+  {
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "status": "Screening Selected"
+  },
+  {
+    "name": "Jane Smith",
+    "email": "jane.smith@example.com",
+    "status": "Screening Selected"
+  },
+  {
+    "name": "Test User",
+    "email": "test@example.com",
+    "status": "Screening Selected"
+  }
+]

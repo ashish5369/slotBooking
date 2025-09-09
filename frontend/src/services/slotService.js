@@ -42,3 +42,14 @@ export const bookSlot = async (bookingData) => {
     throw error;
   }
 };
+
+// Add a new slot (Admin functionality)
+export const addSlot = async (slotData) => {
+  try {
+    const response = await apiClient.post('/add', slotData);
+    return response.data;
+  } catch (error) {
+    console.error('Error adding slot:', error);
+    throw error;
+  }
+};
