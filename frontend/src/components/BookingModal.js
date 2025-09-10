@@ -142,7 +142,7 @@ const BookingModal = ({ show, onHide, onSubmit, slot }) => {
         border: '1px solid rgba(255, 255, 255, 0.3)',
         position: 'relative'
       }} onClick={(e) => e.stopPropagation()}>
-        
+
         {/* Close Button */}
         <button
           onClick={onHide}
@@ -418,7 +418,7 @@ const BookingModal = ({ show, onHide, onSubmit, slot }) => {
                   padding: '10px 24px',
                   border: 'none',
                   borderRadius: '10px',
-                  background: isSubmitting 
+                  background: isSubmitting
                     ? 'linear-gradient(135deg, #9ca3dc 0%, #9e8cc0 100%)'
                     : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   color: 'white',

@@ -48,7 +48,7 @@ function App() {
         name: bookingData.name,
         email: bookingData.email
       });
-      
+
       // Close modal and show success message
       setShowModal(false);
       setAlert({
@@ -56,10 +56,10 @@ function App() {
         variant: 'success',
         message: '✅ Your slot has been booked successfully!'
       });
-      
+
       // Refresh slots to update UI
       fetchSlots();
-      
+
       // Auto-hide success message after 5 seconds
       setTimeout(() => {
         setAlert({ ...alert, show: false });
@@ -95,12 +95,12 @@ function App() {
           <div className={`modern-alert alert-${alert.variant}`}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>{alert.message}</span>
-              <button 
+              <button
                 onClick={handleCloseAlert}
-                style={{ 
-                  background: 'none', 
-                  border: 'none', 
-                  fontSize: '1.2rem', 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.2rem',
                   cursor: 'pointer',
                   opacity: 0.7,
                   transition: 'opacity 0.3s ease'
@@ -118,12 +118,12 @@ function App() {
           <div className="modern-alert alert-danger">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>❌ {error}</span>
-              <button 
+              <button
                 onClick={() => setError(null)}
-                style={{ 
-                  background: 'none', 
-                  border: 'none', 
-                  fontSize: '1.2rem', 
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.2rem',
                   cursor: 'pointer',
                   opacity: 0.7,
                   transition: 'opacity 0.3s ease'
@@ -144,16 +144,16 @@ function App() {
             <div className="loading-text">Loading available slots...</div>
           </div>
         ) : (
-          <SlotCalendar 
-            slots={slots} 
-            onSlotSelect={handleSlotSelect} 
+          <SlotCalendar
+            slots={slots}
+            onSlotSelect={handleSlotSelect}
           />
         )}
 
         {/* Booking Modal */}
-        <BookingModal 
-          show={showModal} 
-          onHide={() => setShowModal(false)} 
+        <BookingModal
+          show={showModal}
+          onHide={() => setShowModal(false)}
           onSubmit={handleBookingSubmit}
           slot={selectedSlot}
         />

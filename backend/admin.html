@@ -979,7 +979,7 @@
                 candidates.forEach(candidate => {
                     const statusClass = candidate.status === 'completed' ? 'status-completed' : 'status-available';
                     const statusText = candidate.status === 'completed' ? 'Interview Done' : 'Active';
-                    
+
                     html += `<tr>
                         <td><strong>${candidate.name}</strong></td>
                         <td>${candidate.email}</td>
@@ -987,14 +987,14 @@
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                         <td>
                             <div style="display: flex; gap: 5px; flex-wrap: wrap;">
-                                ${candidate.status !== 'completed' ? 
-                                    `<button class="btn btn-info btn-sm" onclick="markCandidateCompleted('${candidate.id}', '${candidate.name}')">
+                                ${candidate.status !== 'completed' ?
+                            `<button class="btn btn-info btn-sm" onclick="markCandidateCompleted('${candidate.id}', '${candidate.name}')">
                                         <i class="fas fa-check"></i> Mark Done
-                                    </button>` : 
-                                    `<button class="btn btn-success btn-sm" onclick="markCandidateActive('${candidate.id}', '${candidate.name}')">
+                                    </button>` :
+                            `<button class="btn btn-success btn-sm" onclick="markCandidateActive('${candidate.id}', '${candidate.name}')">
                                         <i class="fas fa-undo"></i> Mark Active
                                     </button>`
-                                }
+                        }
                                 <button class="btn btn-danger btn-sm" onclick="deleteCandidate('${candidate.id}', '${candidate.name}')">
                                     <i class="fas fa-trash"></i> Delete
                                 </button>
@@ -1060,11 +1060,11 @@
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
                                 ${slot.status === 'Booked' ?
-                                `<button onclick="quickMarkAvailable('${slot.slotId}')" 
+                            `<button onclick="quickMarkAvailable('${slot.slotId}')" 
                                              class="btn btn-success btn-sm">
                                         <i class="fas fa-check"></i> Available
                                     </button>` :
-                                `<button onclick="openBookingModal('${slot.slotId}', '${slot.date}', '${slot.startTime}', '${slot.endTime}')" 
+                            `<button onclick="openBookingModal('${slot.slotId}', '${slot.date}', '${slot.startTime}', '${slot.endTime}')" 
                                              class="btn btn-primary btn-sm">
                                         <i class="fas fa-calendar-check"></i> Book
                                     </button>`}

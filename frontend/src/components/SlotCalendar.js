@@ -11,10 +11,10 @@ const SlotCalendar = ({ slots, onSlotSelect }) => {
     title: slot.status === 'Available' ? '✅ Available' : '🔒 Booked',
     start: `${slot.date}T${slot.startTime}`,
     end: `${slot.date}T${slot.endTime}`,
-    extendedProps: { 
+    extendedProps: {
       ...slot,
-      description: slot.status === 'Available' 
-        ? 'Click to book this slot' 
+      description: slot.status === 'Available'
+        ? 'Click to book this slot'
         : `Booked by ${slot.bookedName || 'Someone'}`
     },
     classNames: slot.status === 'Available' ? ['available'] : ['booked'],
@@ -26,7 +26,7 @@ const SlotCalendar = ({ slots, onSlotSelect }) => {
   // Handle calendar event click
   const handleEventClick = (clickInfo) => {
     const slot = clickInfo.event.extendedProps;
-    
+
     // Add visual feedback
     if (slot.status === 'Available') {
       clickInfo.el.style.transform = 'scale(0.95)';
@@ -46,7 +46,7 @@ const SlotCalendar = ({ slots, onSlotSelect }) => {
   // Custom event content
   const renderEventContent = (eventInfo) => {
     const isAvailable = eventInfo.event.extendedProps.status === 'Available';
-    
+
     return (
       <div style={{
         padding: '4px 8px',
@@ -75,7 +75,7 @@ const SlotCalendar = ({ slots, onSlotSelect }) => {
       <div style={{ textAlign: 'center' }}>
         <div className="calendar-legend">
           <div className="calendar-legend-item">
-            <div 
+            <div
               className="legend-color"
               style={{
                 background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)'
@@ -84,7 +84,7 @@ const SlotCalendar = ({ slots, onSlotSelect }) => {
             Available Slots
           </div>
           <div className="calendar-legend-item">
-            <div 
+            <div
               className="legend-color"
               style={{
                 background: 'linear-gradient(135deg, #dc3545 0%, #fd7e14 100%)'
@@ -136,7 +136,7 @@ const SlotCalendar = ({ slots, onSlotSelect }) => {
           hour12: true
         }}
       />
-      
+
       <div className="calendar-tip">
         💡 <strong>Tip:</strong> Click on any available (green) time slot to book your interview. Hover over booked slots to see who reserved them.
       </div>

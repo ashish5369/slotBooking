@@ -410,10 +410,10 @@ class DatabaseService {
                     } else if (this.changes === 0) {
                         reject(new Error('Slot not found'));
                     } else {
-                        resolve({ 
-                            message: 'Slot deleted successfully', 
+                        resolve({
+                            message: 'Slot deleted successfully',
                             deletedSlotId: slotId,
-                            changes: this.changes 
+                            changes: this.changes
                         });
                     }
                 }
@@ -468,10 +468,10 @@ class DatabaseService {
                     } else if (this.changes === 0) {
                         reject(new Error('Candidate not found'));
                     } else {
-                        resolve({ 
-                            message: 'Candidate deleted successfully', 
+                        resolve({
+                            message: 'Candidate deleted successfully',
                             deletedCandidateId: candidateId,
-                            changes: this.changes 
+                            changes: this.changes
                         });
                     }
                 }
