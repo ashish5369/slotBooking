@@ -33,10 +33,13 @@ router.get('/:slotId', slotController.getSlotById);
 router.post('/book', slotController.bookSlot);
 router.post('/add', slotController.addSlot);
 router.put('/:slotId', slotController.updateSlot);
+router.delete('/:slotId', slotController.deleteSlot);
 
 // Candidate management routes (Admin)
 router.get('/admin/candidates', slotController.getAllCandidates);
 router.post('/admin/candidates', slotController.addCandidate);
+router.put('/admin/candidates/:candidateId', slotController.updateCandidate);
+router.delete('/admin/candidates/:candidateId', slotController.deleteCandidate);
 
 // Import/Export functionality
 router.get('/admin/export', slotController.exportToExcel);

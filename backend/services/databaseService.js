@@ -33,9 +33,20 @@ class DatabaseService {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         email TEXT UNIQUE NOT NULL,
+        status TEXT DEFAULT 'active',
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
+        // Add status column to existing candidates if it doesn't exist
+        this.db.run(`
+      ALTER TABLE candidates ADD COLUMN status TEXT DEFAULT 'active'
+    `, (err) => {
+            // Ignore error if column already exists
+            if (err && !err.message.includes('duplicate column name')) {
+                console.error('Error adding status column:', err);
+            }
+        });
 
         // Insert sample data if tables are empty
         this.insertSampleData();
@@ -384,6 +395,87 @@ class DatabaseService {
                     resolve({ message: 'Slot updated successfully', changes: this.changes });
                 }
             });
+        });
+    }
+
+    // Delete a slot
+    deleteSlot(slotId) {
+        return new Promise((resolve, reject) => {
+            this.db.run(
+                'DELETE FROM slots WHERE slotId = ?',
+                [slotId],
+                function (err) {
+                    if (err) {
+                        reject(err);
+                    } else if (this.changes === 0) {
+                        reject(new Error('Slot not found'));
+                    } else {
+                        resolve({ 
+                            message: 'Slot deleted successfully', 
+                            deletedSlotId: slotId,
+                            changes: this.changes 
+                        });
+                    }
+                }
+            );
+        });
+    }
+
+    // Update candidate
+    updateCandidate(candidateId, updates) {
+        return new Promise((resolve, reject) => {
+            const allowedFields = ['name', 'email', 'status'];
+            const updateFields = [];
+            const values = [];
+
+            // Build dynamic update query
+            for (const [key, value] of Object.entries(updates)) {
+                if (allowedFields.includes(key) && value !== undefined) {
+                    updateFields.push(`${key} = ?`);
+                    values.push(value);
+                }
+            }
+
+            if (updateFields.length === 0) {
+                return reject(new Error('No valid fields to update'));
+            }
+
+            values.push(candidateId);
+
+            const query = `UPDATE candidates SET ${updateFields.join(', ')} WHERE id = ?`;
+
+            this.db.run(query, values, function (err) {
+                if (err) {
+                    reject(err);
+                } else if (this.changes === 0) {
+                    reject(new Error('Candidate not found'));
+                } else {
+                    resolve({ message: 'Candidate updated successfully', changes: this.changes });
+                }
+            });
+        });
+    }
+
+    // Delete a candidate
+    deleteCandidate(candidateId) {
+        return new Promise((resolve, reject) => {
+            this.db.run(
+                'DELETE FROM candidates WHERE id = ?',
+                [candidateId],
+                function (err) {
+                    if (err) {
+                        reject(err);
+                    } else if (this.changes === 0) {
+                        reject(new Error('Candidate not found'));
+                    } else {
+                        resolve({ 
+                            message: 'Candidate deleted successfully', 
+                            deletedCandidateId: candidateId,
+                            changes: this.changes 
+                        });
+                    }
+                }
+            );
         });
     }
 

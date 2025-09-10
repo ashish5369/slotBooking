@@ -315,6 +315,31 @@
             color: white;
         }
 
+        .status-completed {
+            background: linear-gradient(135deg, #6f42c1 0%, #007bff 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.4);
+        }
+
         .alert {
             padding: 15px 20px;
             border-radius: 12px;
@@ -724,7 +749,50 @@
                 <i class="fas fa-users"></i>
                 <h2>Approved Candidates</h2>
             </div>
-            <div id="candidatesList"></div>
+
+            <!-- Add New Candidate Section -->
+            <div class="card" style="margin-bottom: 20px; border: 2px solid #667eea;">
+                <div class="card-header"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 12px 12px 0 0;">
+                    <i class="fas fa-user-plus"></i>
+                    <h3 style="margin: 0; color: white;">Add New Candidate First</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <form id="priorityCandidateForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="priorityCandidateName">Candidate Name</label>
+                                <input type="text" id="priorityCandidateName" class="form-control"
+                                    placeholder="Enter full name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="priorityCandidateEmail">Email Address</label>
+                                <input type="email" id="priorityCandidateEmail" class="form-control"
+                                    placeholder="Enter email address" required>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 15px; margin-top: 15px;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i> Add Candidate & Load Others
+                            </button>
+                            <button type="button" onclick="loadExistingCandidates()" class="btn"
+                                style="background: #6c757d; color: white;">
+                                <i class="fas fa-list"></i> Skip & Load Existing Candidates
+                            </button>
+                        </div>
+                    </form>
+                    <div id="priorityCandidateMessage"></div>
+                </div>
+            </div>
+
+            <div id="candidatesList">
+                <div class="info-box" style="text-align: center; padding: 30px;">
+                    <i class="fas fa-info-circle" style="font-size: 2rem; color: #667eea; margin-bottom: 15px;"></i>
+                    <h4 style="margin: 0 0 10px 0; color: #667eea;">Ready to Manage Candidates</h4>
+                    <p style="margin: 0; color: #6c757d;">Add a new candidate above or load existing candidates to get
+                        started.</p>
+                </div>
+            </div>
         </div>
 
         <div class="table-container" style="margin-top: 30px;">
@@ -781,8 +849,47 @@
     </div>
 
     <script>
+        console.log('Script started executing...');
         const API_BASE = 'http://localhost:5000/api/slots';
         let allCandidates = []; // Store all candidates for dropdown
+        console.log('API_BASE set to:', API_BASE);
+
+        // Priority candidate form (new candidate before loading existing ones)
+        document.getElementById('priorityCandidateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('priorityCandidateName').value;
+            const email = document.getElementById('priorityCandidateEmail').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/candidates`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email })
+                });
+
+                const result = await response.json();
+                const messageDiv = document.getElementById('priorityCandidateMessage');
+
+                if (response.ok) {
+                    messageDiv.innerHTML = `<div class="alert alert-success"><i class="fas fa-check-circle"></i>${result.message}</div>`;
+                    document.getElementById('priorityCandidateForm').reset();
+
+                    // Auto-load all candidates after adding the new one
+                    setTimeout(() => {
+                        loadCandidates();
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>${result.message}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('priorityCandidateMessage').innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>Error: ${error.message}</div>`;
+            }
+        });
+
+        // Function to load existing candidates without adding new one
+        async function loadExistingCandidates() {
+            await loadCandidates();
+        }
 
         // Add candidate
         document.getElementById('candidateForm').addEventListener('submit', async (e) => {
@@ -843,15 +950,19 @@
 
         // Load candidates
         async function loadCandidates() {
+            console.log('loadCandidates function called');
             try {
+                console.log('Fetching candidates from:', `${API_BASE}/admin/candidates`);
                 const response = await fetch(`${API_BASE}/admin/candidates`);
                 const candidates = await response.json();
+                console.log('Candidates received:', candidates.length);
 
                 // Store candidates globally for dropdown
                 allCandidates = candidates;
 
                 // Update stats
                 document.getElementById('totalCandidates').textContent = candidates.length;
+                console.log('Updated totalCandidates element');
 
                 let html = `<table class="modern-table">
                     <thead>
@@ -859,30 +970,56 @@
                             <th><i class="fas fa-user"></i> Name</th>
                             <th><i class="fas fa-envelope"></i> Email</th>
                             <th><i class="fas fa-calendar"></i> Added</th>
+                            <th><i class="fas fa-info-circle"></i> Status</th>
+                            <th><i class="fas fa-cogs"></i> Actions</th>
                         </tr>
                     </thead>
                     <tbody>`;
 
                 candidates.forEach(candidate => {
+                    const statusClass = candidate.status === 'completed' ? 'status-completed' : 'status-available';
+                    const statusText = candidate.status === 'completed' ? 'Interview Done' : 'Active';
+                    
                     html += `<tr>
                         <td><strong>${candidate.name}</strong></td>
                         <td>${candidate.email}</td>
                         <td>${new Date(candidate.createdAt).toLocaleDateString()}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                ${candidate.status !== 'completed' ? 
+                                    `<button class="btn btn-info btn-sm" onclick="markCandidateCompleted('${candidate.id}', '${candidate.name}')">
+                                        <i class="fas fa-check"></i> Mark Done
+                                    </button>` : 
+                                    `<button class="btn btn-success btn-sm" onclick="markCandidateActive('${candidate.id}', '${candidate.name}')">
+                                        <i class="fas fa-undo"></i> Mark Active
+                                    </button>`
+                                }
+                                <button class="btn btn-danger btn-sm" onclick="deleteCandidate('${candidate.id}', '${candidate.name}')">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </td>
                     </tr>`;
                 });
                 html += '</tbody></table>';
 
                 document.getElementById('candidatesList').innerHTML = html;
+                console.log('Candidates list updated');
             } catch (error) {
+                console.error('Error in loadCandidates:', error);
                 document.getElementById('candidatesList').innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle"></i>Error loading candidates: ${error.message}</div>`;
             }
         }
 
         // Load slots
         async function loadSlots() {
+            console.log('loadSlots function called');
             try {
+                console.log('Fetching slots from:', `${API_BASE}`);
                 const response = await fetch(`${API_BASE}`);
                 const slots = await response.json();
+                console.log('Slots received:', slots.length);
 
                 // Update stats
                 const availableCount = slots.filter(slot => slot.status === 'Available').length;
@@ -891,6 +1028,7 @@
                 document.getElementById('totalSlots').textContent = slots.length;
                 document.getElementById('availableSlots').textContent = availableCount;
                 document.getElementById('bookedSlots').textContent = bookedCount;
+                console.log('Updated slot statistics');
 
                 let html = `<table class="modern-table">
                     <thead>
@@ -916,19 +1054,25 @@
                         <td>${slot.bookedName || '-'}</td>
                         <td>${slot.bookedEmail || '-'}</td>
                         <td>
-                            <button onclick="fillUpdateForm('${slot.slotId}', '${slot.date}', '${slot.startTime}', '${slot.endTime}', '${slot.status}', '${slot.bookedName || ''}', '${slot.bookedEmail || ''}')" 
-                                    class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            ${slot.status === 'Booked' ?
-                            `<button onclick="quickMarkAvailable('${slot.slotId}')" 
-                                         class="btn btn-success btn-sm" style="margin-left: 5px;">
-                                    <i class="fas fa-check"></i> Available
-                                </button>` :
-                            `<button onclick="openBookingModal('${slot.slotId}', '${slot.date}', '${slot.startTime}', '${slot.endTime}')" 
-                                         class="btn btn-primary btn-sm" style="margin-left: 5px;">
-                                    <i class="fas fa-calendar-check"></i> Book
-                                </button>`}
+                            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                <button onclick="fillUpdateForm('${slot.slotId}', '${slot.date}', '${slot.startTime}', '${slot.endTime}', '${slot.status}', '${slot.bookedName || ''}', '${slot.bookedEmail || ''}')" 
+                                        class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                ${slot.status === 'Booked' ?
+                                `<button onclick="quickMarkAvailable('${slot.slotId}')" 
+                                             class="btn btn-success btn-sm">
+                                        <i class="fas fa-check"></i> Available
+                                    </button>` :
+                                `<button onclick="openBookingModal('${slot.slotId}', '${slot.date}', '${slot.startTime}', '${slot.endTime}')" 
+                                             class="btn btn-primary btn-sm">
+                                        <i class="fas fa-calendar-check"></i> Book
+                                    </button>`}
+                                <button onclick="deleteSlot('${slot.slotId}', '${slot.date}', '${slot.startTime}')" 
+                                        class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
                         </td>
                     </tr>`;
                 });
@@ -996,13 +1140,13 @@
         }
 
         // Import from Excel
-        document.getElementById('importForm').addEventListener('submit', async (e) => {
+        document.getElementById('importFormMain').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const fileInput = document.getElementById('excelFile');
+            const fileInput = document.getElementById('excelFileMain');
             const file = fileInput.files[0];
 
             if (!file) {
-                document.getElementById('importMessage').innerHTML = `<div class="error">❌ Please select a file</div>`;
+                document.getElementById('importMessageMain').innerHTML = `<div class="error">❌ Please select a file</div>`;
                 return;
             }
 
@@ -1016,7 +1160,7 @@
                 });
 
                 const result = await response.json();
-                const messageDiv = document.getElementById('importMessage');
+                const messageDiv = document.getElementById('importMessageMain');
 
                 if (response.ok) {
                     let message = `<div class="success">✅ Import completed!</div>`;
@@ -1039,7 +1183,7 @@
                     messageDiv.innerHTML = `<div class="error">❌ ${result.message}</div>`;
                 }
             } catch (error) {
-                document.getElementById('importMessage').innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+                document.getElementById('importMessageMain').innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
             }
         });
 
@@ -1380,11 +1524,222 @@
             }
         });
 
-        // Load data on page load
+        // Delete candidate function
+        async function deleteCandidate(candidateId, candidateName) {
+            if (!confirm(`Are you sure you want to delete candidate "${candidateName}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/candidates/${candidateId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    const alertDiv = document.createElement('div');
+                    alertDiv.innerHTML = `<div class="alert alert-success" style="position: fixed; top: 20px; right: 20px; z-index: 2000; max-width: 400px;">
+                        <i class="fas fa-check-circle"></i> Candidate "${candidateName}" deleted successfully!
+                    </div>`;
+                    document.body.appendChild(alertDiv);
+
+                    // Remove alert after 3 seconds
+                    setTimeout(() => {
+                        document.body.removeChild(alertDiv);
+                    }, 3000);
+
+                    // Refresh candidates list
+                    loadCandidates();
+                } else {
+                    alert(`Error deleting candidate: ${result.message}`);
+                }
+            } catch (error) {
+                alert(`Error deleting candidate: ${error.message}`);
+            }
+        }
+
+        // Mark candidate as completed
+        async function markCandidateCompleted(candidateId, candidateName) {
+            if (!confirm(`Mark "${candidateName}" as interview completed?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/candidates/${candidateId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'completed' })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    const alertDiv = document.createElement('div');
+                    alertDiv.innerHTML = `<div class="alert alert-success" style="position: fixed; top: 20px; right: 20px; z-index: 2000; max-width: 400px;">
+                        <i class="fas fa-check-circle"></i> "${candidateName}" marked as interview completed!
+                    </div>`;
+                    document.body.appendChild(alertDiv);
+
+                    // Remove alert after 3 seconds
+                    setTimeout(() => {
+                        document.body.removeChild(alertDiv);
+                    }, 3000);
+
+                    // Refresh candidates list
+                    loadCandidates();
+                } else {
+                    alert(`Error updating candidate: ${result.message}`);
+                }
+            } catch (error) {
+                alert(`Error updating candidate: ${error.message}`);
+            }
+        }
+
+        // Mark candidate as active
+        async function markCandidateActive(candidateId, candidateName) {
+            if (!confirm(`Mark "${candidateName}" as active again?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/candidates/${candidateId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'active' })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    const alertDiv = document.createElement('div');
+                    alertDiv.innerHTML = `<div class="alert alert-success" style="position: fixed; top: 20px; right: 20px; z-index: 2000; max-width: 400px;">
+                        <i class="fas fa-check-circle"></i> "${candidateName}" marked as active!
+                    </div>`;
+                    document.body.appendChild(alertDiv);
+
+                    // Remove alert after 3 seconds
+                    setTimeout(() => {
+                        document.body.removeChild(alertDiv);
+                    }, 3000);
+
+                    // Refresh candidates list
+                    loadCandidates();
+                } else {
+                    alert(`Error updating candidate: ${result.message}`);
+                }
+            } catch (error) {
+                alert(`Error updating candidate: ${error.message}`);
+            }
+        }
+
+        // Delete slot function
+        async function deleteSlot(slotId, date, startTime) {
+            if (!confirm(`Are you sure you want to delete slot "${slotId}" on ${date} at ${startTime}? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/${slotId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    const alertDiv = document.createElement('div');
+                    alertDiv.innerHTML = `<div class="alert alert-success" style="position: fixed; top: 20px; right: 20px; z-index: 2000; max-width: 400px;">
+                        <i class="fas fa-check-circle"></i> Slot "${slotId}" deleted successfully!
+                    </div>`;
+                    document.body.appendChild(alertDiv);
+
+                    // Remove alert after 3 seconds
+                    setTimeout(() => {
+                        document.body.removeChild(alertDiv);
+                    }, 3000);
+
+                    // Refresh slots list
+                    loadSlots();
+                } else {
+                    alert(`Error deleting slot: ${result.message}`);
+                }
+            } catch (error) {
+                alert(`Error deleting slot: ${error.message}`);
+            }
+        }
+
+        // Load data on page load - using multiple event listeners to ensure it works
         window.addEventListener('load', () => {
-            loadCandidates();
-            loadSlots();
+            console.log('Window load event fired');
+            autoLoadData();
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM content loaded event fired');
+            autoLoadData();
+        });
+
+        // Backup timer-based loading
+        setTimeout(() => {
+            console.log('Timer-based loading triggered');
+            autoLoadData();
+        }, 1000);
+
+        // Auto-load function
+        function autoLoadData() {
+            console.log('Auto-loading data...');
+
+            // Add visual indicator that loading started
+            document.getElementById('totalCandidates').textContent = 'Loading...';
+            document.getElementById('totalSlots').textContent = 'Loading...';
+            document.getElementById('availableSlots').textContent = 'Loading...';
+            document.getElementById('bookedSlots').textContent = 'Loading...';
+
+            try {
+                loadCandidates();
+                loadSlots();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('totalCandidates').textContent = 'Error';
+                document.getElementById('totalSlots').textContent = 'Error';
+            }
+        }
+
+        // Try immediate execution as well
+        console.log('Attempting immediate auto-load...');
+        setTimeout(() => {
+            if (document.getElementById('totalCandidates')) {
+                console.log('Elements found, executing autoLoadData');
+                autoLoadData();
+            } else {
+                console.log('Elements not found yet');
+            }
+        }, 100);
+    </script>
+
+    <!-- Auto-load script -->
+    <script>
+        console.log('Auto-load script running...');
+        // Auto-load data after page loads
+        setTimeout(() => {
+            console.log('Auto-loading data...');
+            if (typeof loadCandidates === 'function' && typeof loadSlots === 'function') {
+                document.getElementById('totalCandidates').textContent = 'Loading...';
+                document.getElementById('totalSlots').textContent = 'Loading...';
+                document.getElementById('availableSlots').textContent = 'Loading...';
+                document.getElementById('bookedSlots').textContent = 'Loading...';
+
+                loadCandidates();
+                loadSlots();
+                console.log('Auto-load completed');
+            } else {
+                console.log('Load functions not available');
+            }
+        }, 1000);
     </script>
 </body>
 

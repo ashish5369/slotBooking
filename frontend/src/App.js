@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Alert } from 'react-bootstrap';
 import SlotCalendar from './components/SlotCalendar';
 import BookingModal from './components/BookingModal';
 import { getAllSlots, bookSlot } from './services/slotService';
@@ -55,16 +54,21 @@ function App() {
       setAlert({
         show: true,
         variant: 'success',
-        message: 'Your slot has been booked successfully!'
+        message: '✅ Your slot has been booked successfully!'
       });
       
       // Refresh slots to update UI
       fetchSlots();
+      
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => {
+        setAlert({ ...alert, show: false });
+      }, 5000);
     } catch (err) {
       setAlert({
         show: true,
         variant: 'danger',
-        message: err.response?.data?.message || 'Failed to book slot. Please try again.'
+        message: err.response?.data?.message || '❌ Failed to book slot. Please try again.'
       });
     }
   };
@@ -75,48 +79,86 @@ function App() {
   };
 
   return (
-    <Container className="mt-5">
-      <Row className="header">
-        <Col>
-          <h1>Interview Slot Booking</h1>
+    <div className="App">
+      <div className="main-container">
+        {/* Modern Header */}
+        <div className="modern-header">
+          <h1>
+            <span className="emoji">📅</span>
+            <span className="text">Interview Slot Booking</span>
+          </h1>
           <p>Select an available time slot for your interview</p>
-        </Col>
-      </Row>
-
-      {alert.show && (
-        <Alert 
-          variant={alert.variant} 
-          onClose={handleCloseAlert} 
-          dismissible
-        >
-          {alert.message}
-        </Alert>
-      )}
-
-      {error && (
-        <Alert variant="danger">
-          {error}
-        </Alert>
-      )}
-
-      {loading ? (
-        <div className="text-center my-5">
-          <p>Loading available slots...</p>
         </div>
-      ) : (
-        <SlotCalendar 
-          slots={slots} 
-          onSlotSelect={handleSlotSelect} 
-        />
-      )}
 
-      <BookingModal 
-        show={showModal} 
-        onHide={() => setShowModal(false)} 
-        onSubmit={handleBookingSubmit}
-        slot={selectedSlot}
-      />
-    </Container>
+        {/* Alert Messages */}
+        {alert.show && (
+          <div className={`modern-alert alert-${alert.variant}`}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{alert.message}</span>
+              <button 
+                onClick={handleCloseAlert}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  fontSize: '1.2rem', 
+                  cursor: 'pointer',
+                  opacity: 0.7,
+                  transition: 'opacity 0.3s ease'
+                }}
+                onMouseOver={(e) => e.target.style.opacity = 1}
+                onMouseOut={(e) => e.target.style.opacity = 0.7}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="modern-alert alert-danger">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>❌ {error}</span>
+              <button 
+                onClick={() => setError(null)}
+                style={{ 
+                  background: 'none', 
+                  border: 'none', 
+                  fontSize: '1.2rem', 
+                  cursor: 'pointer',
+                  opacity: 0.7,
+                  transition: 'opacity 0.3s ease'
+                }}
+                onMouseOver={(e) => e.target.style.opacity = 1}
+                onMouseOut={(e) => e.target.style.opacity = 0.7}
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {loading ? (
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <div className="loading-text">Loading available slots...</div>
+          </div>
+        ) : (
+          <SlotCalendar 
+            slots={slots} 
+            onSlotSelect={handleSlotSelect} 
+          />
+        )}
+
+        {/* Booking Modal */}
+        <BookingModal 
+          show={showModal} 
+          onHide={() => setShowModal(false)} 
+          onSubmit={handleBookingSubmit}
+          slot={selectedSlot}
+        />
+      </div>
+    </div>
   );
 }
 

@@ -262,3 +262,52 @@ exports.updateSlot = async (req, res) => {
     });
   }
 };
+
+// Delete a specific slot
+exports.deleteSlot = async (req, res) => {
+  try {
+    const { slotId } = req.params;
+
+    const result = await dbService.deleteSlot(slotId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error deleting slot:', error);
+    res.status(500).json({
+      message: 'Error deleting slot',
+      error: error.message
+    });
+  }
+};
+
+// Update candidate status
+exports.updateCandidate = async (req, res) => {
+  try {
+    const { candidateId } = req.params;
+    const updates = req.body;
+
+    const result = await dbService.updateCandidate(candidateId, updates);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error updating candidate:', error);
+    res.status(500).json({
+      message: 'Error updating candidate',
+      error: error.message
+    });
+  }
+};
+
+// Delete a specific candidate
+exports.deleteCandidate = async (req, res) => {
+  try {
+    const { candidateId } = req.params;
+
+    const result = await dbService.deleteCandidate(candidateId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error deleting candidate:', error);
+    res.status(500).json({
+      message: 'Error deleting candidate',
+      error: error.message
+    });
+  }
+};
