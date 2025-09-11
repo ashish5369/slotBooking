@@ -105,7 +105,7 @@ class DatabaseService {
         return new Promise((resolve, reject) => {
             this.db.all("SELECT * FROM slots ORDER BY date, startTime", (err, rows) => {
                 if (err) reject(err);
-                else resolve(rows);
+                else resolve(rows); 
             });
         });
     }
